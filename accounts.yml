@@ -1,0 +1,49 @@
+default:
+  accounts:
+    - id: 7373601
+      memo: Bofa savings
+      type: cash
+    - id: 8580607
+      memo: Betterment cash reserve
+      type: cash
+    - id: 8001300
+      memo: Discover pie savings
+      type: cash
+    - id: 7373598
+      memo: fidelity auto
+      type: invest
+    - id: 6964461
+      memo: fidelity vacaciones
+      type: invest
+    - id: 7373599
+      memo: fidelity viaje fran
+      type: invest
+  allocation:
+    gold: 25
+    bond: 25
+    cash: 25
+    stock: 25
+
+fran-roth:
+  accounts:
+    - id: 8578452
+      memo: fidelity
+      type: invest
+  allocation:
+    gold: 20
+    bond: 20
+    cash: 20
+    stock: 20
+    smallcap: 20
+
+universidad:
+  accounts:
+    - id: 7373600
+      memo: fidelity
+      type: invest
+  allocation:
+    gold: 20
+    bond: 20
+    cash: 20
+    stock: 20
+    smallcap: 20
