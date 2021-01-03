@@ -8,6 +8,12 @@ import yaml
 load_dotenv()
 
 
+def load_config(filename):
+    with open(filename) as file:
+        contents = yaml.load(file, Loader=yaml.FullLoader)
+    return contents
+
+
 def get_actual_allocation(config, accounts, invests):
     actual = deepcopy(config['allocation'])
     for key in actual:
@@ -25,10 +31,29 @@ def get_actual_allocation(config, accounts, invests):
     return actual
 
 
-with open(r'./accounts.yml') as file:
-    account_config = yaml.load(file, Loader=yaml.FullLoader)
-with open(r'./symbols.yml') as file:
-    SYMBOLS = yaml.load(file, Loader=yaml.FullLoader)
+def needs_rebalance(actual, desired):
+    threshold = CONFIG['threshold']
+    total = 0.0
+    for value in actual.values():
+        total += value
+
+    for asset_type in desired:
+        min_band = total*(desired[asset_type] -
+                          desired[asset_type]*threshold/100)/100
+        max_band = total*(desired[asset_type] +
+                          desired[asset_type]*threshold/100)/100
+
+        print(
+            f'Asset[{asset_type}]: {min_band} - {max_band}, actual: {actual[asset_type]}')
+        if actual[asset_type] < min_band or actual[asset_type] > max_band:
+            return True
+
+    return False
+
+
+account_config = load_config(r'./accounts.yml')
+SYMBOLS = load_config(r'./symbols.yml')
+CONFIG = load_config(r'./config.yml')
 
 mint = mintapi.Mint(
     os.environ['API_USER'],
@@ -40,7 +65,10 @@ mint = mintapi.Mint(
 invests = json.loads(mint.get_invests_json())
 accounts = mint.get_accounts()
 
-# for account in account_config:
-allocation = get_actual_allocation(
-    account_config['default'], accounts, invests)
-print(allocation)
+for account in account_config:
+    allocation = get_actual_allocation(
+        account_config[account], accounts, invests)
+    print(allocation)
+
+    if needs_rebalance(allocation, account_config[account]['allocation']):
+        print(f"{account} needs rebalance!")
