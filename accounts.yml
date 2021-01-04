@@ -1,4 +1,6 @@
 default:
+  options:
+    tax: true
   accounts:
     - id: 7373601
       memo: Bofa savings
@@ -25,6 +27,8 @@ default:
     stock: 25
 
 fran-roth:
+  options:
+    tax: false
   accounts:
     - id: 8578452
       memo: fidelity
@@ -37,6 +41,8 @@ fran-roth:
     smallcap: 20
 
 universidad:
+  options:
+    tax: true
   accounts:
     - id: 7373600
       memo: fidelity

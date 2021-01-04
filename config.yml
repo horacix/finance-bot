@@ -1,1 +1,7 @@
 threshold: 40
+preferred:
+  gold: IAU
+  bond: FNBGX
+  cash: FUMBX
+  smallcap: FISVX
+  stock: FZROX
