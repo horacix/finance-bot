@@ -9,7 +9,8 @@ mint = mintapi.Mint(
     mfa_method='soft-token',
     mfa_token=os.environ['MFA_TOKEN'],
     headless=True,
-    use_chromedriver_on_path=True
+    use_chromedriver_on_path=True,
+    wait_for_sync=False
 )
 mint.initiate_account_refresh()
 mint.close()
