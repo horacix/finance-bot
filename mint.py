@@ -26,6 +26,7 @@ def get_actual_allocation(config, accounts, invests):
     actual = deepcopy(config['allocation'])
     for key in actual:
         actual[key] = 0.0
+    actual['none'] = 0.0
 
     for account in config['accounts']:
         for line in accounts:
@@ -53,6 +54,10 @@ def needs_rebalance(actual, desired):
             return True
 
     return False
+
+
+def needs_invest(actual):
+    return actual['none'] > 1.0
 
 
 def find_sell(allocation, actual):
@@ -85,6 +90,21 @@ def find_min(actual, used):
     return found
 
 
+def buy_recommendations(actual, available, total, allocation, used):
+    rec = []
+    buy = find_min(actual, used)
+    while buy and available > 0:
+        gap = round(max(total*allocation[buy]/100 - actual[buy], 0))
+        howmuch = min(available, gap)
+        rec.append(
+            {'asset': f"{buy} ({CONFIG['preferred'][buy]})", 'amount': howmuch})
+        available -= howmuch
+        used.append(buy)
+        buy = find_min(actual, used)
+
+    return rec
+
+
 def recommendation(config, actual):
     allocation = config['allocation']
     tax = config['options']['tax']
@@ -97,22 +117,28 @@ def recommendation(config, actual):
     if tax:  # optimize tax (sell less)
         sell = find_sell(allocation, actual)
         if sell:
-            available = round(actual[sell] - total*allocation[sell]/100)
+            available = round(actual[sell] - total*allocation[sell]/100 + actual['none'])
             rec['sell'].append({'asset': sell, 'amount': available})
-            used = [sell]
-            buy = find_min(actual, used)
-            while buy and available > 0:
-                gap = round(max(total*allocation[buy]/100 - actual[buy], 0))
-                howmuch = min(available, gap)
-                rec['buy'].append(
-                    {'asset': f"{buy} ({CONFIG['preferred'][buy]})", 'amount': howmuch})
-                available -= howmuch
-                used.append(buy)
-                buy = find_min(actual, used)
+            used = [sell, 'none']
+            rec['buy'] = buy_recommendations(
+                actual, available, total, allocation, used)
     else:  # rebalance everything
-        rec = "hola"
+        pass
 
-    return (rec)
+    return rec
+
+
+def invest(config, actual):
+    allocation = config['allocation']
+    total = get_actual_total(actual)
+    available = actual['none']
+    used = ['none']
+    rec = {
+        'buy': buy_recommendations(actual, available, total, allocation, used),
+        'sell': []
+    }
+
+    return rec
 
 
 def pretty_rec(message):
@@ -123,6 +149,16 @@ def pretty_rec(message):
     for rec in message['buy']:
         out += f' {rec["asset"]}: {rec["amount"]}\n'
     return out
+
+
+def send_notification(subject, message):
+    sns = boto3.resource('sns')
+    topic = sns.Topic(os.environ['AWS_TOPIC_ARN'])
+    response = topic.publish(
+        Subject=subject,
+        Message=message
+    )
+    print(response)
 
 
 account_config = load_config(r'./accounts.yml')
@@ -144,17 +180,19 @@ accounts = mint.get_accounts()
 mint.close()
 
 for account in account_config:
+    print(account)
     allocation = get_actual_allocation(
         account_config[account], accounts, invests)
     print(allocation)
 
-    if needs_rebalance(allocation, account_config[account]['allocation']):
+    if needs_invest(allocation):
+        print("Found non-invested money")
+        send_notification(f"Found money in {account}", f"Found money in {account}\n" + pretty_rec(
+            invest(account_config[account], allocation)))
+    elif needs_rebalance(allocation, account_config[account]['allocation']):
         print("Found rebalance")
-        sns = boto3.resource('sns')
-        topic = sns.Topic(os.environ['AWS_TOPIC_ARN'])
-        response = topic.publish(
-            Subject=f"{account} needs rebalance!",
-            Message=f"{account} needs rebalance!\n" + pretty_rec(recommendation(
-                account_config[account], allocation))
-        )
-        print(response)
+        send_notification(f"{account} needs rebalance!", f"{account} needs rebalance!\n" +
+                          pretty_rec(recommendation(account_config[account], allocation)))
+    else:
+        print("OK")
+
