@@ -134,7 +134,8 @@ mint = mintapi.Mint(
     os.environ['API_PASSWORD'],
     mfa_method='soft-token',
     mfa_token=os.environ['MFA_TOKEN'],
-    headless=True
+    headless=True,
+    use_chromedriver_on_path=True
 )
 
 invests = json.loads(mint.get_invests_json())
@@ -147,6 +148,7 @@ for account in account_config:
     print(allocation)
 
     if needs_rebalance(allocation, account_config[account]['allocation']):
+        print("Found rebalance")
         sns = boto3.resource('sns')
         topic = sns.Topic(os.environ['AWS_TOPIC_ARN'])
         response = topic.publish(
