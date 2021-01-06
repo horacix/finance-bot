@@ -1,3 +1,4 @@
+import argparse
 import boto3
 import json
 import mintapi
@@ -7,6 +8,14 @@ from copy import deepcopy
 import yaml
 
 load_dotenv()
+
+def read_args():
+    parser = argparse.ArgumentParser(
+        description="Get Mint data and update recommendations"
+    )
+    parser.add_argument("local", action="store_true", help="Print recommendations locally. (Don't use SNS)")
+    args = parser.parse_args()
+    return args
 
 
 def load_config(filename):
@@ -161,6 +170,8 @@ def send_notification(subject, message):
     print(response)
 
 
+# Read configuration
+args = read_args()
 account_config = load_config(r'./accounts.yml')
 SYMBOLS = load_config(r'./symbols.yml')
 CONFIG = load_config(r'./config.yml')
@@ -185,14 +196,18 @@ for account in account_config:
         account_config[account], accounts, invests)
     print(allocation)
 
+    rec = ""
     if needs_invest(allocation):
-        print("Found non-invested money")
-        send_notification(f"Found money in {account}", f"Found money in {account}\n" + pretty_rec(
-            invest(account_config[account], allocation)))
+        rec = f"Found money in {account}\n" + 
+             pretty_rec(invest(account_config[account], allocation))
+        print(rec)
+        if not args.local:
+            send_notification(f"Found money in {account}", rec)
     elif needs_rebalance(allocation, account_config[account]['allocation']):
-        print("Found rebalance")
-        send_notification(f"{account} needs rebalance!", f"{account} needs rebalance!\n" +
-                          pretty_rec(recommendation(account_config[account], allocation)))
+        rec = f"{account} needs rebalance!\n" +
+            pretty_rec(recommendation(account_config[account], allocation))
+        print(rec)
+        if not args.local:
+            send_notification(f"{account} needs rebalance!", rec)
     else:
-        print("OK")
-
+        print("OK")    
