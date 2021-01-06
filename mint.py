@@ -9,11 +9,13 @@ import yaml
 
 load_dotenv()
 
+
 def read_args():
     parser = argparse.ArgumentParser(
         description="Get Mint data and update recommendations"
     )
-    parser.add_argument("local", action="store_true", help="Print recommendations locally. (Don't use SNS)")
+    parser.add_argument("--local", action="store_true",
+                        help="Print recommendations locally. (Don't use SNS)")
     args = parser.parse_args()
     return args
 
@@ -126,7 +128,8 @@ def recommendation(config, actual):
     if tax:  # optimize tax (sell less)
         sell = find_sell(allocation, actual)
         if sell:
-            available = round(actual[sell] - total*allocation[sell]/100 + actual['none'])
+            available = round(actual[sell] - total *
+                              allocation[sell]/100 + actual['none'])
             rec['sell'].append({'asset': sell, 'amount': available})
             used = [sell, 'none']
             rec['buy'] = buy_recommendations(
@@ -198,16 +201,16 @@ for account in account_config:
 
     rec = ""
     if needs_invest(allocation):
-        rec = f"Found money in {account}\n" +
+        rec = f"Found money in {account}\n" + \
             pretty_rec(invest(account_config[account], allocation))
         print(rec)
         if not args.local:
             send_notification(f"Found money in {account}", rec)
     elif needs_rebalance(allocation, account_config[account]['allocation']):
-        rec = f"{account} needs rebalance!\n" +
+        rec = f"{account} needs rebalance!\n" + \
             pretty_rec(recommendation(account_config[account], allocation))
         print(rec)
         if not args.local:
             send_notification(f"{account} needs rebalance!", rec)
     else:
-        print("OK")    
+        print("OK\n")
