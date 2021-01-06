@@ -20,6 +20,9 @@ default:
     - id: 7373599
       memo: fidelity viaje fran
       type: invest
+    - id: 8582713
+      memo: fidelity default short-term savings
+      type: invest
   allocation:
     gold: 25
     bond: 25
