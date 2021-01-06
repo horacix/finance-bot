@@ -198,8 +198,8 @@ for account in account_config:
 
     rec = ""
     if needs_invest(allocation):
-        rec = f"Found money in {account}\n" + 
-             pretty_rec(invest(account_config[account], allocation))
+        rec = f"Found money in {account}\n" +
+            pretty_rec(invest(account_config[account], allocation))
         print(rec)
         if not args.local:
             send_notification(f"Found money in {account}", rec)
