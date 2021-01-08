@@ -1,4 +1,9 @@
 threshold: 40
+main:
+  account: 5558707
+  memo: bofa
+  low: 6250
+  high: 10420
 preferred:
   gold: IAU
   bond: FNBGX

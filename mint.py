@@ -16,6 +16,8 @@ def read_args():
     )
     parser.add_argument("--local", action="store_true",
                         help="Print recommendations locally. (Don't use SNS)")
+    parser.add_argument("--debug", action="store_true",
+                        help="Print downloaded json data")
     args = parser.parse_args()
     return args
 
@@ -153,6 +155,15 @@ def invest(config, actual):
     return rec
 
 
+def needs_sweep(accounts):
+    for line in accounts:
+        if line["id"] == CONFIG["main"]["account"]:
+            config = CONFIG["main"]
+            return line["value"] > config["high"] or line["value"] < config["low"]
+
+    return False
+
+
 def pretty_rec(message):
     out = "SELL:\n"
     for rec in message['sell']:
@@ -189,9 +200,14 @@ mint = mintapi.Mint(
     wait_for_sync=False
 )
 
-invests = json.loads(mint.get_invests_json())
 accounts = mint.get_accounts()
+invests = json.loads(mint.get_invests_json())
 mint.close()
+with open('./accounts.json', "w") as file:
+    file.write(json.dumps(accounts, indent=4, sort_keys=True, default=str))
+with open('./invests.json', "w") as file:
+    file.write(json.dumps(invests, indent=4, sort_keys=True, default=str))
+
 
 for account in account_config:
     print(account)
@@ -214,3 +230,9 @@ for account in account_config:
             send_notification(f"{account} needs rebalance!", rec)
     else:
         print("OK\n")
+
+if needs_sweep(accounts):
+    print("Main account needs sweep")
+    if not args.local:
+        send_notification("Main account needs sweep",
+                          "Main account needs sweep")
