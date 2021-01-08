@@ -1,4 +1,4 @@
-default:
+short-term:
   options:
     tax: true
   accounts:
@@ -11,16 +11,16 @@ default:
     - id: 8001300
       memo: Discover pie savings
       type: cash
-    - id: 7373598
+    - id: 8595665
       memo: fidelity auto
       type: invest
-    - id: 6964461
+    - id: 8595667
       memo: fidelity vacaciones
       type: invest
-    - id: 7373599
+    - id: 8595674
       memo: fidelity viaje fran
       type: invest
-    - id: 8582713
+    - id: 8595670
       memo: fidelity default short-term savings
       type: invest
   allocation:
@@ -29,11 +29,11 @@ default:
     cash: 25
     stock: 25
 
-fran-roth:
+universidad:
   options:
-    tax: false
+    tax: true
   accounts:
-    - id: 8578452
+    - id: 8595671
       memo: fidelity
       type: invest
   allocation:
@@ -43,12 +43,18 @@ fran-roth:
     stock: 20
     smallcap: 20
 
-universidad:
+ira:
   options:
-    tax: true
+    tax: false
   accounts:
-    - id: 7373600
-      memo: fidelity
+    - id: 8595672
+      memo: brokeragelink
+      type: invest
+    - id: 8595669
+      memo: roth
+      type: invest
+    - id: 8578452
+      memo: fran-roth
       type: invest
   allocation:
     gold: 20
