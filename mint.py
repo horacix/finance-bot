@@ -18,6 +18,8 @@ def read_args():
                         help="Print recommendations locally. (Don't use SNS)")
     parser.add_argument("--debug", action="store_true",
                         help="Print downloaded json data")
+    parser.add_argument("--account", nargs="?", default="",
+                        help="Specific account")
     args = parser.parse_args()
     return args
 
@@ -208,8 +210,11 @@ with open('./accounts.json', "w") as file:
 with open('./invests.json', "w") as file:
     file.write(json.dumps(invests, indent=4, sort_keys=True, default=str))
 
+accounts_to_eval = account_config.keys()
+if args.account != "":
+    accounts_to_eval = [args.account]
 
-for account in account_config:
+for account in accounts_to_eval:
     print(account)
     allocation = get_actual_allocation(
         account_config[account], accounts, invests)
