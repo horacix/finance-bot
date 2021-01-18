@@ -204,7 +204,9 @@ mint = mintapi.Mint(
 
 accounts = mint.get_accounts()
 invests = json.loads(mint.get_invests_json())
+mint.initiate_account_refresh()
 mint.close()
+
 with open('./accounts.json', "w") as file:
     file.write(json.dumps(accounts, indent=4, sort_keys=True, default=str))
 with open('./invests.json', "w") as file:
