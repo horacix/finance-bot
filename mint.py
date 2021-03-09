@@ -1,5 +1,6 @@
 import argparse
 import boto3
+from decimal import Decimal, getcontext
 import json
 import mintapi
 import os
@@ -8,6 +9,7 @@ from copy import deepcopy
 import yaml
 
 load_dotenv()
+TWOPLACES = Decimal(10) ** -2
 
 
 def read_args():
@@ -169,10 +171,10 @@ def needs_sweep(accounts):
 def pretty_rec(message):
     out = "SELL:\n"
     for rec in message['sell']:
-        out += f' {rec["asset"]}: {rec["amount"]}\n'
+        out += f' {rec["asset"]}: {Decimal(rec["amount"]).quantize(TWOPLACES)}\n'
     out += "BUY:\n"
     for rec in message['buy']:
-        out += f' {rec["asset"]}: {rec["amount"]}\n'
+        out += f' {rec["asset"]}: {Decimal(rec["amount"]).quantize(TWOPLACES)}\n'
     return out
 
 
@@ -184,6 +186,32 @@ def send_notification(subject, message):
         Message=message
     )
     print(response)
+
+
+def decimal_allocation(allocation):
+    ret = {}
+    for account in allocation:
+        ret[account] = Decimal(allocation[account]).quantize(TWOPLACES)
+    return ret
+
+
+def updatedb(account, allocation):
+    table = boto3.resource('dynamodb').Table('finance')
+    total = Decimal(sum(allocation.values())).quantize(TWOPLACES)
+    print(total)
+
+    response = table.update_item(
+        Key={
+            'account': account
+        },
+        UpdateExpression='SET allocation=:a, balance=:t',
+        ExpressionAttributeValues={
+            ':a': decimal_allocation(allocation),
+            ':t': total
+        }
+    )
+    if args.debug:
+        print(response)
 
 
 # Read configuration
@@ -237,6 +265,8 @@ for account in accounts_to_eval:
             send_notification(f"{account} needs rebalance!", rec)
     else:
         print("OK\n")
+
+    updatedb(account, allocation)
 
 if needs_sweep(accounts):
     print("Main account needs sweep")
