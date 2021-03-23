@@ -13,7 +13,7 @@ isort==5.7.0
 jmespath==0.10.0
 lazy-object-proxy==1.4.3
 mccabe==0.6.1
-mintapi==1.44
+mintapi @ git+https://github.com/mrooney/mintapi.git@faa25f01c44b30a6097d77de9a60da3c216ad2ba
 mock==4.0.3
 numpy==1.19.4
 oathtool==2.3.0
