@@ -22,8 +22,7 @@ def read_args():
                         help="Print downloaded json data")
     parser.add_argument("--account", nargs="?", default="",
                         help="Specific account")
-    args = parser.parse_args()
-    return args
+    return parser.parse_args()
 
 
 def load_config(filename):
@@ -96,14 +95,9 @@ def find_min(actual, used):
     for asset in actual:
         if asset in used:
             continue
-        if found:
-            if value > actual[asset]:
-                found = asset
-                value = actual[asset]
-        else:
+        if found and value > actual[asset] or not found:
             found = asset
             value = actual[asset]
-
     return found
 
 
@@ -151,12 +145,10 @@ def invest(config, actual):
     total = get_actual_total(actual)
     available = actual['none']
     used = ['none']
-    rec = {
+    return {
         'buy': buy_recommendations(actual, available, total, allocation, used),
         'sell': []
     }
-
-    return rec
 
 
 def needs_sweep(accounts):
@@ -189,10 +181,10 @@ def send_notification(subject, message):
 
 
 def decimal_allocation(allocation):
-    ret = {}
-    for account in allocation:
-        ret[account] = Decimal(allocation[account]).quantize(TWOPLACES)
-    return ret
+    return {
+        account: Decimal(allocation[account]).quantize(TWOPLACES)
+        for account in allocation
+    }
 
 
 def updatedb(account, allocation):
