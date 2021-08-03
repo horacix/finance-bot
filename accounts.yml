@@ -5,18 +5,9 @@ short-term:
     - id: 7373601
       memo: Bofa savings
       type: cash
-    - id: 8580607
-      memo: Betterment cash reserve
-      type: cash
     - id: 8001300
       memo: Discover pie savings
       type: cash
-    - id: 8595665
-      memo: fidelity auto
-      type: invest
-    - id: 8595674
-      memo: fidelity viaje fran
-      type: invest
     - id: 8582713
       memo: fidelity default short-term savings
       type: invest
