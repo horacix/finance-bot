@@ -14,9 +14,6 @@ short-term:
     - id: 8595665
       memo: fidelity auto
       type: invest
-    - id: 8595667
-      memo: fidelity vacaciones
-      type: invest
     - id: 8595674
       memo: fidelity viaje fran
       type: invest
