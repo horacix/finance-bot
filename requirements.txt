@@ -20,7 +20,6 @@ numpy==1.19.4
 oathtool==2.3.0
 pandas==1.1.5
 path==15.0.1
-pkg_resources==0.0.0
 pycodestyle==2.6.0
 pylint==2.6.0
 python-dateutil==2.8.1
