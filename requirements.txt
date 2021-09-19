@@ -12,14 +12,15 @@ importlib-resources==4.1.1
 isort==5.7.0
 jmespath==0.10.0
 lazy-object-proxy==1.4.3
+mariadb==1.0.7
 mccabe==0.6.1
-mintapi @ git+https://github.com/mrooney/mintapi.git@faa25f01c44b30a6097d77de9a60da3c216ad2ba
+-e git+https://github.com/mrooney/mintapi.git@faa25f01c44b30a6097d77de9a60da3c216ad2ba#egg=mintapi
 mock==4.0.3
 numpy==1.19.4
 oathtool==2.3.0
 pandas==1.1.5
 path==15.0.1
-pkg-resources==0.0.0
+pkg_resources==0.0.0
 pycodestyle==2.6.0
 pylint==2.6.0
 python-dateutil==2.8.1
