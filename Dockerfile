@@ -6,6 +6,7 @@ RUN curl -LsS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | bash
 RUN apt-get update && apt-get -y install libmariadb3 libmariadb-dev chromium-driver
 RUN mkdir -p /app
 WORKDIR /app
-COPY .env *.py *.yml requirements.txt ./
+COPY requirements.txt ./
 RUN pip install -r requirements.txt
+COPY *.py *.yml ./
 ENTRYPOINT [ "python", "mint.py" ]

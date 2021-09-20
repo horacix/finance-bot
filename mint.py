@@ -1,12 +1,14 @@
 import argparse
 import boto3
-from decimal import Decimal, getcontext
+from decimal import Decimal
 import json
 import mintapi
 import os
 from dotenv import load_dotenv
 from copy import deepcopy
 import yaml
+import mariadb
+from datetime import datetime
 
 load_dotenv()
 TWOPLACES = Decimal(10) ** -2
@@ -204,6 +206,34 @@ def updatedb(account, allocation):
     )
     if args.debug:
         print(response)
+
+    try:
+        conn = mariadb.connect(
+            user=os.environ['DATABASE_USER'],
+            password=os.environ['DATABASE_PASSWORD'],
+            host=os.environ['DATABASE_HOST'],
+            port=3306,
+            database=os.environ['DATABASE'],
+            autocommit=True
+        )
+    except mariadb.Error as e:
+        print(f"Error connecting to MariaDB Platform: {e}")
+        return
+
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT account_id FROM accounts WHERE account_name=?", (account,))
+
+    account_id = -1
+    for row in cur:
+        account_id = row[0]
+
+    cur.execute(
+        "INSERT INTO balances (account_id, balance_date, balance_amount) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE balance_amount=?",
+        (account_id, datetime.now().isoformat(), total, total)
+    )
+
+    conn.close()
 
 
 # Read configuration
