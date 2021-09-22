@@ -8,6 +8,9 @@ short-term:
     - id: 8001300
       memo: Discover pie savings
       type: cash
+    - id: 5558707
+      memo: Bofa checking
+      type: cash
     - id: 8582713
       memo: fidelity default short-term savings
       type: invest
