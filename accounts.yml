@@ -27,6 +27,9 @@ universidad:
     - id: 8595671
       memo: fidelity
       type: invest
+    - id: 9032844
+      memo: M1
+      type: invest
   allocation:
     gold: 20
     bond: 20
