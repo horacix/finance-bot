@@ -128,17 +128,13 @@ def recommendation(config, actual):
     }
 
     if tax:  # optimize tax (sell less)
-        sell = find_sell(allocation, actual)
-        if sell:
+        if sell := find_sell(allocation, actual):
             available = round(actual[sell] - total *
                               allocation[sell]/100 + actual['none'])
             rec['sell'].append({'asset': sell, 'amount': available})
             used = [sell, 'none']
             rec['buy'] = buy_recommendations(
                 actual, available, total, allocation, used)
-    else:  # rebalance everything
-        pass
-
     return rec
 
 
@@ -157,9 +153,12 @@ def needs_sweep(accounts):
     for line in accounts:
         if line["id"] == CONFIG["main"]["account"]:
             config = CONFIG["main"]
-            return line["value"] > config["high"] or line["value"] < config["low"]
+            if line["value"] > config["high"]:
+                return line["value"] - config["high"] + (config["high"] - config["low"])/2
+            if line["value"] < config["low"]:
+                return line["value"] - config["low"] - (config["high"] - config["low"])/2
 
-    return False
+    return 0
 
 
 def pretty_rec(message):
@@ -290,8 +289,9 @@ for account in accounts_to_eval:
 
     updatedb(account, allocation)
 
-if needs_sweep(accounts):
-    print("Main account needs sweep")
+sweep = needs_sweep(accounts)
+if sweep != 0:
+    print(f"Main account needs sweep: {sweep}")
     if not args.local:
         send_notification("Main account needs sweep",
-                          "Main account needs sweep")
+                          f"Deposit {sweep} into checking" if sweep < 0 else f"Withdraw {sweep} out of checking")
