@@ -24,9 +24,6 @@ universidad:
   options:
     tax: true
   accounts:
-    - id: 8595671
-      memo: fidelity
-      type: invest
     - id: 9032844
       memo: M1
       type: invest
