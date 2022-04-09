@@ -2,3 +2,4 @@
 venv
 chromedriver
 *.json
+.dccache

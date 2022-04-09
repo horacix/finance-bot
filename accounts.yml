@@ -47,6 +47,9 @@ ira:
     - id: 8578452
       memo: fran-roth
       type: invest
+    - id: 8955508
+      memo: M1 apv
+      type: invest
   allocation:
     gold: 20
     bond: 20
