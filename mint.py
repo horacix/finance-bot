@@ -251,15 +251,16 @@ mint = mintapi.Mint(
     wait_for_sync=False
 )
 
-accounts = mint.get_accounts()
-invests = json.loads(mint.get_invests_json())
+accounts = mint.get_account_data()
+invests = mint.get_investment_data()
 mint.initiate_account_refresh()
 mint.close()
 
-with open('./accounts.json', "w") as file:
-    file.write(json.dumps(accounts, indent=4, sort_keys=True, default=str))
-with open('./invests.json', "w") as file:
-    file.write(json.dumps(invests, indent=4, sort_keys=True, default=str))
+if args.debug:
+    with open('./out/accounts.json', "w") as file:
+        file.write(json.dumps(accounts, indent=4, sort_keys=True, default=str))
+    with open('./out/invests.json', "w") as file:
+        file.write(json.dumps(invests, indent=4, sort_keys=True, default=str))
 
 accounts_to_eval = account_config.keys()
 if args.account != "":
@@ -287,7 +288,8 @@ for account in accounts_to_eval:
     else:
         print("OK\n")
 
-    updatedb(account, allocation)
+    if not args.local:
+        updatedb(account, allocation)
 
 sweep = needs_sweep(accounts)
 if sweep != 0:
