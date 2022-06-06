@@ -40,6 +40,18 @@ def get_actual_total(actual):
     return total
 
 
+def investments_to_holdings(invests, id):
+    ret = []
+    for line in invests:
+        if line['accountId'] == id:
+            if args.debug: print(line['id'])
+            ret.append({
+                'symbol': line['symbol'],
+                'value': line['currentValue']
+            })
+    return ret
+
+
 def get_actual_allocation(config, accounts, invests):
     actual = deepcopy(config['allocation'])
     for key in actual:
@@ -50,7 +62,7 @@ def get_actual_allocation(config, accounts, invests):
         for line in accounts:
             if account['id'] == line['id']:
                 if account['type'] == 'invest':
-                    for holding in invests[str(account['id'])]['holdings'].values():
+                    for holding in investments_to_holdings(invests, line['id']):
                         actual[SYMBOLS[holding['symbol']]] += holding['value']
                 else:
                     actual[account['type']] += line['value']
@@ -251,15 +263,16 @@ mint = mintapi.Mint(
     wait_for_sync=False
 )
 
-accounts = mint.get_accounts()
-invests = json.loads(mint.get_invests_json())
+accounts = mint.get_account_data()
+invests = mint.get_investment_data()
 mint.initiate_account_refresh()
 mint.close()
 
-with open('./accounts.json', "w") as file:
-    file.write(json.dumps(accounts, indent=4, sort_keys=True, default=str))
-with open('./invests.json', "w") as file:
-    file.write(json.dumps(invests, indent=4, sort_keys=True, default=str))
+if args.debug:
+    with open('./out/accounts.json', "w") as file:
+        file.write(json.dumps(accounts, indent=4, sort_keys=True, default=str))
+    with open('./out/invests.json', "w") as file:
+        file.write(json.dumps(invests, indent=4, sort_keys=True, default=str))
 
 accounts_to_eval = account_config.keys()
 if args.account != "":
@@ -287,7 +300,8 @@ for account in accounts_to_eval:
     else:
         print("OK\n")
 
-    updatedb(account, allocation)
+    if not args.local:
+        updatedb(account, allocation)
 
 sweep = needs_sweep(accounts)
 if sweep != 0:
