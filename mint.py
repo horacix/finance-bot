@@ -40,6 +40,18 @@ def get_actual_total(actual):
     return total
 
 
+def investments_to_holdings(invests, id):
+    ret = []
+    for line in invests:
+        if line['accountId'] == id:
+            if args.debug: print(line['id'])
+            ret.append({
+                'symbol': line['symbol'],
+                'value': line['currentValue']
+            })
+    return ret
+
+
 def get_actual_allocation(config, accounts, invests):
     actual = deepcopy(config['allocation'])
     for key in actual:
@@ -50,7 +62,7 @@ def get_actual_allocation(config, accounts, invests):
         for line in accounts:
             if account['id'] == line['id']:
                 if account['type'] == 'invest':
-                    for holding in invests[str(account['id'])]['holdings'].values():
+                    for holding in investments_to_holdings(invests, line['id']):
                         actual[SYMBOLS[holding['symbol']]] += holding['value']
                 else:
                     actual[account['type']] += line['value']
