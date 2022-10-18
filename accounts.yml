@@ -12,6 +12,7 @@ short-term:
       memo: fidelity default short-term savings
       type: invest
     - id: "63797368_8963257"
+      mid: "125646874647451176"
       memo: M1 Spend
       type: cash
   allocation:
@@ -42,11 +43,12 @@ ira:
       memo: brokeragelink
       type: invest
     - id: "63797368_8595669"
+      mid: "125631306450064687"
       memo: roth
       type: invest
-    - id: "63797368_8578452"
-      memo: fran-roth
-      type: invest
+    # - id: "63797368_8578452"
+    #   memo: fran-roth
+    #   type: invest
     - id: "63797368_8955508"
       memo: M1 apv
       type: invest
