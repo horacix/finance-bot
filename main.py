@@ -132,13 +132,14 @@ def get_actual_total(actual):
 def investments_to_holdings(invests, id):
     ret = []
     for line in invests:
-        if line['accountId'] == id:
-            if args.debug:
-                print(line['id'])
-            ret.append({
-                'symbol': line['symbol'],
-                'value': line['currentValue']
-            })
+        for holding in line['node']['holdings']:
+            if holding['account']['id'] == id:
+                if args.debug:
+                    print(f"{id}: {holding['id']}")
+                ret.append({
+                    'symbol': holding['ticker'],
+                    'value': holding['value']
+                })
     return ret
 
 
@@ -155,7 +156,7 @@ def get_actual_allocation(config, accounts, invests):
                     for holding in investments_to_holdings(invests, line['id']):
                         actual[SYMBOLS[holding['symbol']]] += holding['value']
                 else:
-                    actual[account['type']] += line['value']
+                    actual[account['type']] += line['displayBalance']
 
     return actual
 
@@ -255,10 +256,10 @@ def needs_sweep(accounts):
     for line in accounts:
         if line["id"] == CONFIG["main"]["account"]:
             config = CONFIG["main"]
-            if line["value"] > config["high"]:
-                return line["value"] - config["high"] + (config["high"] - config["low"])/2
-            if line["value"] < config["low"]:
-                return line["value"] - config["low"] - (config["high"] - config["low"])/2
+            if line["displayBalance"] > config["high"]:
+                return line["displayBalance"] - config["high"] + (config["high"] - config["low"])/2
+            if line["displayBalance"] < config["low"]:
+                return line["displayBalance"] - config["low"] - (config["high"] - config["low"])/2
 
     return 0
 
@@ -337,20 +338,6 @@ def updatedb(account, allocation):
     conn.close()
 
 
-def invest_overrides(inject, invests):
-    new_invests = []
-    for item in invests:
-        new_item = item.copy()
-        if item["accountId"] in inject.keys():
-            if item["symbol"] in inject[item["accountId"]]["holdings"].keys():
-                new_item["currentValue"] = inject[item["accountId"]
-                                                  ]["holdings"][item["symbol"]]
-                print(
-                    f"found new value {item['currentValue']} -> {new_item['currentValue']}")
-        new_invests.append(new_item)
-    return new_invests
-
-
 # Read configuration
 args = read_args()
 account_config = load_config(r'./accounts.yml')
@@ -361,23 +348,14 @@ monarch = Monarch(os.environ['MONARCH_USERNAME'],
                   os.environ['MONARCH_PASSWORD'])
 # print(json.dumps(monarch.get_holdings('125631306450064687')))
 invests = monarch.get_all_holdings()
-if args.debug:
-    print(json.dumps(invests))
 
 accounts = monarch.get_accounts()
-if args.debug:
-    print(json.dumps(accounts))
-exit(0)
 
 if args.debug:
     with open('./out/accounts.json', "w") as file:
         file.write(json.dumps(accounts, indent=4, sort_keys=True, default=str))
     with open('./out/invests.json', "w") as file:
         file.write(json.dumps(invests, indent=4, sort_keys=True, default=str))
-
-if args.local:
-    inject = load_config(r'./fidelity-override.yaml')
-    invests = invest_overrides(inject, invests)
 
 accounts_to_eval = account_config.keys()
 if args.account != "":
@@ -386,7 +364,7 @@ if args.account != "":
 for account in accounts_to_eval:
     print(account)
     allocation = get_actual_allocation(
-        account_config[account], accounts, invests)
+        account_config[account], accounts['data']['accounts'], invests['data']['portfolio']['aggregateHoldings']['edges'])
     print(allocation)
 
     rec = ""
@@ -408,7 +386,7 @@ for account in accounts_to_eval:
     if not args.local:
         updatedb(account, allocation)
 
-sweep = needs_sweep(accounts)
+sweep = needs_sweep(accounts['data']['accounts'])
 if sweep != 0:
     print(f"Main account needs sweep: {sweep}")
     if not args.local:

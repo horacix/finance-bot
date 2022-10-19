@@ -2,17 +2,16 @@ short-term:
   options:
     tax: true
   accounts:
-    - id: "63797368_7373601"
+    - id: "125647287557805620"
       memo: Bofa savings
       type: cash
-    - id: "63797368_8001300"
+    - id: "125647713079383611"
       memo: Discover pie savings
       type: cash
-    - id: "63797368_8582713"
+    - id: "125631306028537133"
       memo: fidelity default short-term savings
       type: invest
-    - id: "63797368_8963257"
-      mid: "125646874647451176"
+    - id: "125646874647451176"
       memo: M1 Spend
       type: cash
   allocation:
@@ -25,7 +24,7 @@ universidad:
   options:
     tax: true
   accounts:
-    - id: "63797368_9196141"
+    - id: "125646874609702439"
       memo: M1
       type: invest
   allocation:
@@ -39,17 +38,16 @@ ira:
   options:
     tax: false
   accounts:
-    - id: "63797368_8595672"
+    - id: "125631306328429870"
       memo: brokeragelink
       type: invest
-    - id: "63797368_8595669"
-      mid: "125631306450064687"
+    - id: "125631306450064687"
       memo: roth
       type: invest
     # - id: "63797368_8578452"
     #   memo: fran-roth
     #   type: invest
-    - id: "63797368_8955508"
+    - id: "125646874675762729"
       memo: M1 apv
       type: invest
   allocation:
