@@ -3,3 +3,4 @@ venv
 chromedriver
 *.json
 .dccache
+out
