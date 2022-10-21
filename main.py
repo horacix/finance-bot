@@ -178,7 +178,7 @@ def needs_rebalance(actual, desired):
 
 
 def needs_invest(actual):
-    return actual['none'] > 1.0
+    return actual['none'] > 25.0
 
 
 def find_sell(allocation, actual):
