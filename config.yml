@@ -10,3 +10,6 @@ preferred:
   cash: FUMBX
   smallcap: FISVX
   stock: FZROX
+vesting:
+- "127711048011601786"
+- "127711048093390716"

@@ -50,16 +50,16 @@ query GetAccountsPage {
   }
 }
 """
-        data = self.client.execute(
-            query=query, operation_name=operation_name, variables=variables)
-        return data
+        return self.client.execute(
+            query=query, operation_name=operation_name, variables=variables
+        )
 
     def get_all_holdings(self):
         operation_name = 'Web_GetHoldings'
         variables = {
             "input": {
-                "startDate": "2022-09-18",
-                "endDate": "2022-10-18"
+                "startDate": "2022-12-29",
+                "endDate": "2023-01-29"
             }
         }
         query = """
@@ -98,9 +98,9 @@ query Web_GetHoldings($input: PortfolioInput) {
   }
 }
 """
-        data = self.client.execute(
-            query=query, operation_name=operation_name, variables=variables)
-        return data
+        return self.client.execute(
+            query=query, operation_name=operation_name, variables=variables
+        )
 
 
 def read_args():
@@ -264,6 +264,14 @@ def needs_sweep(accounts):
     return 0
 
 
+def vested(accounts):
+    return any(
+        line["id"] in CONFIG["vesting"]
+        and float(line["displayBalance"]) > 0.01
+        for line in accounts
+    )
+
+
 def pretty_rec(message):
     out = "SELL:\n"
     for rec in message['sell']:
@@ -392,3 +400,8 @@ if sweep != 0:
     if not args.local:
         send_notification("Main account needs sweep",
                           f"Deposit {sweep} into checking" if sweep < 0 else f"Withdraw {sweep} out of checking")
+
+if vested(accounts["data"]["accounts"]):
+    print("Balance in vesting account")
+    if not args.local:
+        send_notification("Vesting available", "Go to MorganStanley and sell available stock")
