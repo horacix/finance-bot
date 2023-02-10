@@ -41,14 +41,20 @@ ira:
     - id: "125631306328429870"
       memo: brokeragelink
       type: invest
+    - id: "130183492315108355"
+      memo: Brokeragelink Roth
+      type: invest
     - id: "125631306450064687"
-      memo: roth
+      memo: Fidelity Roth
+      type: invest
+    - id: "134602324096046668"
+      memo: M1 Roth
       type: invest
     # - id: "63797368_8578452"
     #   memo: fran-roth
     #   type: invest
     - id: "125646874675762729"
-      memo: M1 apv
+      memo: M1 Taxable APV
       type: invest
   allocation:
     gold: 20
