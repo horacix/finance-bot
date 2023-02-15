@@ -57,8 +57,9 @@ ira:
       memo: M1 Taxable APV
       type: invest
   allocation:
-    gold: 20
-    bond: 20
-    cash: 20
-    stock: 20
-    smallcap: 20
+    gold: 19
+    bond: 19
+    cash: 19
+    stock: 19
+    smallcap: 19
+    other: 5

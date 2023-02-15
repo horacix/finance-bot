@@ -154,7 +154,11 @@ def get_actual_allocation(config, accounts, invests):
             if account['id'] == line['id']:
                 if account['type'] == 'invest':
                     for holding in investments_to_holdings(invests, line['id']):
-                        actual[SYMBOLS[holding['symbol']]] += holding['value']
+                        if holding['symbol'] in SYMBOLS:
+                            actual[SYMBOLS[holding['symbol']]
+                                   ] += holding['value']
+                        else:
+                            actual['other'] += holding['value']
                 else:
                     actual[account['type']] += line['displayBalance']
 
@@ -166,6 +170,8 @@ def needs_rebalance(actual, desired):
     total = get_actual_total(actual)
 
     for asset_type in desired:
+        if asset_type == 'other': # TODO: Only skip if below threshold
+           continue
         min_band = total*(desired[asset_type] -
                           desired[asset_type]*threshold/100)/100
         max_band = total*(desired[asset_type] +
@@ -235,7 +241,7 @@ def recommendation(config, actual):
             available = round(actual[sell] - total *
                               allocation[sell]/100 + actual['none'])
             rec['sell'].append({'asset': sell, 'amount': available})
-            used = [sell, 'none']
+            used = [sell, 'none', 'other']
             rec['buy'] = buy_recommendations(
                 actual, available, total, allocation, used)
     return rec
@@ -245,7 +251,7 @@ def invest(config, actual):
     allocation = config['allocation']
     total = get_actual_total(actual)
     available = actual['none']
-    used = ['none']
+    used = ['none', 'other']
     return {
         'buy': buy_recommendations(actual, available, total, allocation, used),
         'sell': []
@@ -404,4 +410,5 @@ if sweep != 0:
 if vested(accounts["data"]["accounts"]):
     print("Balance in vesting account")
     if not args.local:
-        send_notification("Vesting available", "Go to MorganStanley and sell available stock")
+        send_notification("Vesting available",
+                          "Go to MorganStanley and sell available stock")
