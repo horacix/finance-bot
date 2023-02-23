@@ -215,8 +215,10 @@ def find_min(actual, used):
 def buy_recommendations(actual, available, total, allocation, used):
     rec = []
     buy = find_min(actual, used)
+    total_wo_other = total - actual.get('other', 0)
+    percent_wo_other = 100 - allocation.get('other', 0)
     while buy and available > 0:
-        gap = round(max(total*allocation[buy]/100 - actual[buy], 0))
+        gap = round(max(total_wo_other*allocation[buy]/percent_wo_other - actual[buy], 0))
         howmuch = min(available, gap)
         rec.append(
             {'asset': f"{buy} ({CONFIG['preferred'][buy]})", 'amount': howmuch})
