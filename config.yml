@@ -5,11 +5,11 @@ main:
   low: 6250
   high: 10420
 preferred:
-  gold: IAU
-  bond: FNBGX
-  cash: FUMBX
-  smallcap: FISVX
-  stock: FZROX
+  gold: IAU/GLDM/IAUM
+  bond: FNBGX/VGLT
+  cash: FUMBX/VGSH
+  smallcap: FISVX/VIOV
+  stock: FZROX/VTI
   other: "???"
 vesting:
 - "127711048011601786"

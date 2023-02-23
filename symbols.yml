@@ -9,10 +9,13 @@ FXNAX: bond
 VGLT: bond
 FUMBX: cash
 VGSH: cash
+BTG: gold
 GLDM: gold
 IAU: gold
+IAUM: gold
 FISVX: smallcap
 FSSNX: smallcap
+VBR: smallcap
 VIOV: smallcap
 FTIHX: stock
 FZILX: stock
