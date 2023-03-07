@@ -148,6 +148,7 @@ def get_actual_allocation(config, accounts, invests):
     for key in actual:
         actual[key] = 0.0
     actual['none'] = 0.0
+    actual['other'] = 0.0
 
     for account in config['accounts']:
         for line in accounts:
