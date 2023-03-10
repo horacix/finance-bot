@@ -125,7 +125,7 @@ def load_config(filename):
 def get_actual_total(actual):
     total = 0.0
     for value in actual.values():
-        total += value
+        total += value if type(value) == float else sum(value.values())
     return total
 
 
@@ -138,7 +138,8 @@ def investments_to_holdings(invests, id):
                     print(f"{id}: {holding['id']}")
                 ret.append({
                     'symbol': holding['ticker'],
-                    'value': holding['value']
+                    'value': holding['value'],
+                    'account_id': id
                 })
     return ret
 
@@ -147,17 +148,22 @@ def get_actual_allocation(config, accounts, invests):
     actual = deepcopy(config['allocation'])
     for key in actual:
         actual[key] = 0.0
-    actual['none'] = 0.0
+    actual['none'] = {}
     actual['other'] = 0.0
 
     for account in config['accounts']:
+        ALL_ACCOUNTS[account['id']] = account['memo']
         for line in accounts:
             if account['id'] == line['id']:
                 if account['type'] == 'invest':
                     for holding in investments_to_holdings(invests, line['id']):
                         if holding['symbol'] in SYMBOLS:
-                            actual[SYMBOLS[holding['symbol']]
-                                   ] += holding['value']
+                            if SYMBOLS[holding['symbol']] == 'none':
+                                actual['none'][holding['account_id']
+                                               ] = holding['value']
+                            else:
+                                actual[SYMBOLS[holding['symbol']]
+                                       ] += holding['value']
                         else:
                             actual['other'] += holding['value']
                 else:
@@ -171,8 +177,8 @@ def needs_rebalance(actual, desired):
     total = get_actual_total(actual)
 
     for asset_type in desired:
-        if asset_type == 'other': # TODO: Only skip if below threshold
-           continue
+        if asset_type == 'other':  # TODO: Only skip if below threshold
+            continue
         min_band = total*(desired[asset_type] -
                           desired[asset_type]*threshold/100)/100
         max_band = total*(desired[asset_type] +
@@ -185,7 +191,9 @@ def needs_rebalance(actual, desired):
 
 
 def needs_invest(actual):
-    return actual['none'] > 25.0
+    if len(actual['none']) > 0:
+        return max(actual['none'].values()) >= MIN_INVEST
+    return False
 
 
 def find_sell(allocation, actual):
@@ -219,7 +227,8 @@ def buy_recommendations(actual, available, total, allocation, used):
     total_wo_other = total - actual.get('other', 0)
     percent_wo_other = 100 - allocation.get('other', 0)
     while buy and available > 0:
-        gap = round(max(total_wo_other*allocation[buy]/percent_wo_other - actual[buy], 0))
+        gap = round(
+            max(total_wo_other*allocation[buy]/percent_wo_other - actual[buy], 0))
         howmuch = min(available, gap)
         rec.append(
             {'asset': f"{buy} ({CONFIG['preferred'][buy]})", 'amount': howmuch})
@@ -230,7 +239,7 @@ def buy_recommendations(actual, available, total, allocation, used):
     return rec
 
 
-def recommendation(config, actual):
+def rebalance(config, actual):
     allocation = config['allocation']
     tax = config['options']['tax']
     total = get_actual_total(actual)
@@ -253,12 +262,18 @@ def recommendation(config, actual):
 def invest(config, actual):
     allocation = config['allocation']
     total = get_actual_total(actual)
-    available = actual['none']
-    used = ['none', 'other']
-    return {
-        'buy': buy_recommendations(actual, available, total, allocation, used),
-        'sell': []
-    }
+    ret = []
+    for account, amount in actual['none'].items():
+        if amount < MIN_INVEST:
+            continue
+        available = amount
+        used = ['none', 'other']
+        ret.append({
+            'buy': buy_recommendations(actual, available, total, allocation, used),
+            'account': account
+        })
+        # TODO Update actual based on previous recommendations
+    return ret
 
 
 def needs_sweep(accounts):
@@ -282,12 +297,21 @@ def vested(accounts):
 
 
 def pretty_rec(message):
-    out = "SELL:\n"
-    for rec in message['sell']:
-        out += f' {rec["asset"]}: {Decimal(rec["amount"]).quantize(TWOPLACES)}\n'
-    out += "BUY:\n"
-    for rec in message['buy']:
-        out += f' {rec["asset"]}: {Decimal(rec["amount"]).quantize(TWOPLACES)}\n'
+    out = ""
+    if type(message) == list:
+        out += 'BUY:\n'
+        for m in message:
+            out += ALL_ACCOUNTS[m['account']] + "\n"
+            for rec in m['buy']:
+                out += f' {rec["asset"]}: {Decimal(rec["amount"]).quantize(TWOPLACES)}\n'
+    else:
+        if 'sell' in message:
+            out += "SELL:\n"
+            for rec in message['sell']:
+                out += f' {rec["asset"]}: {Decimal(rec["amount"]).quantize(TWOPLACES)}\n'
+        out += "BUY:\n"
+        for rec in message['buy']:
+            out += f' {rec["asset"]}: {Decimal(rec["amount"]).quantize(TWOPLACES)}\n'
     return out
 
 
@@ -360,6 +384,8 @@ args = read_args()
 account_config = load_config(r'./accounts.yml')
 SYMBOLS = load_config(r'./symbols.yml')
 CONFIG = load_config(r'./config.yml')
+MIN_INVEST = CONFIG['min_investment_balance']
+ALL_ACCOUNTS = {}
 
 monarch = Monarch(os.environ['MONARCH_USERNAME'],
                   os.environ['MONARCH_PASSWORD'])
@@ -393,7 +419,7 @@ for account in accounts_to_eval:
             send_notification(f"Found money in {account}", rec)
     elif needs_rebalance(allocation, account_config[account]['allocation']):
         rec = f"{account} needs rebalance!\n" + \
-            pretty_rec(recommendation(account_config[account], allocation))
+            pretty_rec(rebalance(account_config[account], allocation))
         print(rec)
         if not args.local:
             send_notification(f"{account} needs rebalance!", rec)
