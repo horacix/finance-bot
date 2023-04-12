@@ -185,7 +185,7 @@ def needs_rebalance(actual, desired):
 
 
 def needs_invest(actual):
-    return actual['none'] > 25.0
+    return actual['none'] > MIN_INVEST
 
 
 def find_sell(allocation, actual):
@@ -360,6 +360,7 @@ args = read_args()
 account_config = load_config(r'./accounts.yml')
 SYMBOLS = load_config(r'./symbols.yml')
 CONFIG = load_config(r'./config.yml')
+MIN_INVEST = CONFIG['min_investment_balance']
 
 monarch = Monarch(os.environ['MONARCH_USERNAME'],
                   os.environ['MONARCH_PASSWORD'])

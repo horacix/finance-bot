@@ -44,9 +44,9 @@ ira:
     - id: "130183492315108355"
       memo: Brokeragelink Roth
       type: invest
-    - id: "125631306450064687"
-      memo: Fidelity Roth
-      type: invest
+    # - id: "125631306450064687" # switched to trading account
+    #   memo: Fidelity Roth
+    #   type: invest
     - id: "134602324096046668"
       memo: M1 Roth
       type: invest
