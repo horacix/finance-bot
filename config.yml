@@ -1,5 +1,4 @@
 threshold: 40
-min_investment_balance: 25
 main:
   account: "125647287449802290"
   memo: bofa
