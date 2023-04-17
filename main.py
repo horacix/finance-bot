@@ -201,6 +201,8 @@ def find_sell(allocation, actual):
     threshold = CONFIG['threshold']
 
     for asset in allocation:
+        if asset in ["none", "other"]:
+            continue
         target = total*allocation[asset]/100
         diff = (actual[asset]-target)/target
         if diff > threshold/100:
@@ -238,6 +240,9 @@ def buy_recommendations(actual, available, total, allocation, used):
     return rec
 
 
+def total_available(none):
+    return sum([v for v in none.values() if v > MIN_INVEST])
+
 def rebalance(config, actual):
     allocation = config['allocation']
     tax = config['options']['tax']
@@ -249,8 +254,9 @@ def rebalance(config, actual):
 
     if tax:  # optimize tax (sell less)
         if sell := find_sell(allocation, actual):
+            print(sell)
             available = round(actual[sell] - total *
-                              allocation[sell]/100 + actual['none'])
+                              allocation[sell]/100 + total_available(actual['none']))
             rec['sell'].append({'asset': sell, 'amount': available})
             used = [sell, 'none', 'other']
             rec['buy'] = buy_recommendations(
@@ -261,7 +267,7 @@ def rebalance(config, actual):
 def invest(config, actual):
     allocation = config['allocation']
     total = get_actual_total(actual)
-    available = sum([v for v in actual['none'].values() if v > MIN_INVEST])
+    available = total_available(actual['none'])
     used = ['none', 'other']
     return {
         'buy': buy_recommendations(actual, available, total, allocation, used),
@@ -292,7 +298,7 @@ def vested(accounts):
 def pretty_rec(message, available: dict):
     out = "SELL:\n"
     for rec in message['sell']:
-        out += f' {rec["asset"]} ({rec["rec"]}): {Decimal(rec["amount"]).quantize(TWOPLACES)}\n'
+        out += f' {rec["asset"]}: {Decimal(rec["amount"]).quantize(TWOPLACES)}\n'
     out += "BUY:\n"
     for rec in message['buy']:
         out += f' {rec["asset"]} ({rec["rec"]}): {Decimal(rec["amount"]).quantize(TWOPLACES)}\n'
@@ -408,7 +414,7 @@ for account in accounts_to_eval:
             send_notification(f"Found money in {account}", rec)
     elif needs_rebalance(allocation, account_config[account]['allocation']):
         rec = f"{account} needs rebalance!\n" + \
-            pretty_rec(rebalance(account_config[account], allocation))
+            pretty_rec(rebalance(account_config[account], allocation), allocation["none"])
         print(rec)
         if not args.local:
             send_notification(f"{account} needs rebalance!", rec)
