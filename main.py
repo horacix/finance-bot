@@ -222,7 +222,7 @@ def buy_recommendations(actual, available, total, allocation, used):
         gap = round(max(total_wo_other*allocation[buy]/percent_wo_other - actual[buy], 0))
         howmuch = min(available, gap)
         rec.append(
-            {'asset': f"{buy} ({CONFIG['preferred'][buy]})", 'amount': howmuch})
+            {'asset': buy, 'rec': CONFIG['preferred'][buy], 'amount': howmuch})
         available -= howmuch
         used.append(buy)
         buy = find_min(actual, used)
@@ -230,7 +230,7 @@ def buy_recommendations(actual, available, total, allocation, used):
     return rec
 
 
-def recommendation(config, actual):
+def rebalance(config, actual):
     allocation = config['allocation']
     tax = config['options']['tax']
     total = get_actual_total(actual)
@@ -281,13 +281,13 @@ def vested(accounts):
     )
 
 
-def pretty_rec(message):
+def pretty_rec(message, allocation):
     out = "SELL:\n"
     for rec in message['sell']:
-        out += f' {rec["asset"]}: {Decimal(rec["amount"]).quantize(TWOPLACES)}\n'
+        out += f' {rec["asset"]} ({rec["rec"]}): {Decimal(rec["amount"]).quantize(TWOPLACES)}\n'
     out += "BUY:\n"
     for rec in message['buy']:
-        out += f' {rec["asset"]}: {Decimal(rec["amount"]).quantize(TWOPLACES)}\n'
+        out += f' {rec["asset"]} ({rec["rec"]}): {Decimal(rec["amount"]).quantize(TWOPLACES)}\n'
     return out
 
 
@@ -388,13 +388,13 @@ for account in accounts_to_eval:
     rec = ""
     if needs_invest(allocation):
         rec = f"Found money in {account}\n" + \
-            pretty_rec(invest(account_config[account], allocation))
+            pretty_rec(invest(account_config[account], allocation), allocation)
         print(rec)
         if not args.local:
             send_notification(f"Found money in {account}", rec)
     elif needs_rebalance(allocation, account_config[account]['allocation']):
         rec = f"{account} needs rebalance!\n" + \
-            pretty_rec(recommendation(account_config[account], allocation))
+            pretty_rec(rebalance(account_config[account], allocation), allocation)
         print(rec)
         if not args.local:
             send_notification(f"{account} needs rebalance!", rec)
