@@ -125,7 +125,7 @@ def load_config(filename):
 def get_actual_total(actual):
     total = 0.0
     for value in actual.values():
-        total += value
+        total += value if type(value) == float else sum(value.values())
     return total
 
 
@@ -138,7 +138,8 @@ def investments_to_holdings(invests, id):
                     print(f"{id}: {holding['id']}")
                 ret.append({
                     'symbol': holding['ticker'],
-                    'value': holding['value']
+                    'value': holding['value'],
+                    'account_id': id
                 })
     return ret
 
@@ -147,17 +148,22 @@ def get_actual_allocation(config, accounts, invests):
     actual = deepcopy(config['allocation'])
     for key in actual:
         actual[key] = 0.0
-    actual['none'] = 0.0
+    actual['none'] = {}
     actual['other'] = 0.0
 
     for account in config['accounts']:
+        ALL_ACCOUNTS[account['id']] = account['memo']
         for line in accounts:
             if account['id'] == line['id']:
                 if account['type'] == 'invest':
                     for holding in investments_to_holdings(invests, line['id']):
                         if holding['symbol'] in SYMBOLS:
-                            actual[SYMBOLS[holding['symbol']]
-                                   ] += holding['value']
+                            if SYMBOLS[holding['symbol']] == 'none':
+                                actual['none'][holding['account_id']
+                                               ] = holding['value']
+                            else:
+                                actual[SYMBOLS[holding['symbol']]
+                                       ] += holding['value']
                         else:
                             actual['other'] += holding['value']
                 else:
@@ -185,7 +191,9 @@ def needs_rebalance(actual, desired):
 
 
 def needs_invest(actual):
-    return actual['none'] > MIN_INVEST
+    if len(actual['none']) > 0:
+        return max(actual['none'].values()) >= MIN_INVEST
+    return False
 
 
 def find_sell(allocation, actual):
@@ -253,7 +261,7 @@ def rebalance(config, actual):
 def invest(config, actual):
     allocation = config['allocation']
     total = get_actual_total(actual)
-    available = actual['none']
+    available = sum([v for v in actual['none'].values() if v > MIN_INVEST])
     used = ['none', 'other']
     return {
         'buy': buy_recommendations(actual, available, total, allocation, used),
@@ -281,13 +289,18 @@ def vested(accounts):
     )
 
 
-def pretty_rec(message, allocation):
+def pretty_rec(message, available: dict):
     out = "SELL:\n"
     for rec in message['sell']:
         out += f' {rec["asset"]} ({rec["rec"]}): {Decimal(rec["amount"]).quantize(TWOPLACES)}\n'
     out += "BUY:\n"
     for rec in message['buy']:
         out += f' {rec["asset"]} ({rec["rec"]}): {Decimal(rec["amount"]).quantize(TWOPLACES)}\n'
+    if len(available) > 0:
+        out += "AVAILABLE:\n"
+        for aid, avalue in available.items():
+            if avalue > MIN_INVEST:
+                out += f' {ALL_ACCOUNTS[aid]}: {avalue}\n'
     return out
 
 
@@ -361,6 +374,7 @@ account_config = load_config(r'./accounts.yml')
 SYMBOLS = load_config(r'./symbols.yml')
 CONFIG = load_config(r'./config.yml')
 MIN_INVEST = CONFIG['min_investment_balance']
+ALL_ACCOUNTS = {}
 
 monarch = Monarch(os.environ['MONARCH_USERNAME'],
                   os.environ['MONARCH_PASSWORD'])
@@ -388,13 +402,13 @@ for account in accounts_to_eval:
     rec = ""
     if needs_invest(allocation):
         rec = f"Found money in {account}\n" + \
-            pretty_rec(invest(account_config[account], allocation), allocation)
+            pretty_rec(invest(account_config[account], allocation), allocation["none"])
         print(rec)
         if not args.local:
             send_notification(f"Found money in {account}", rec)
     elif needs_rebalance(allocation, account_config[account]['allocation']):
         rec = f"{account} needs rebalance!\n" + \
-            pretty_rec(rebalance(account_config[account], allocation), allocation)
+            pretty_rec(rebalance(account_config[account], allocation))
         print(rec)
         if not args.local:
             send_notification(f"{account} needs rebalance!", rec)
