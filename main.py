@@ -323,13 +323,13 @@ def send_notification(subject, message):
 def decimal_allocation(allocation):
     return {
         account: Decimal(allocation[account]).quantize(TWOPLACES)
-        for account in allocation
+        for account in allocation if account != 'none'
     }
 
 
 def updatedb(account, allocation):
     table = boto3.resource('dynamodb').Table('finance')
-    total = Decimal(sum(allocation.values())).quantize(TWOPLACES)
+    total = Decimal(get_actual_total(allocation)).quantize(TWOPLACES)
     print(total)
 
     response = table.update_item(
