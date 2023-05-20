@@ -2,18 +2,21 @@ short-term:
   options:
     tax: true
   accounts:
-    - id: "125647287557805620"
-      memo: Bofa savings
-      type: cash
-    - id: "125647713079383611"
-      memo: Discover pie savings
-      type: cash
-    - id: "125631306028537133"
-      memo: fidelity default short-term savings
-      type: invest
-    - id: "125646874647451176"
-      memo: M1 Spend
-      type: cash
+  - id: "125647287557805620"
+    memo: Bofa savings
+    type: cash
+  - id: "125647713079383611"
+    memo: Discover pie savings
+    type: cash
+  - id: "125631306028537133"
+    memo: fidelity default short-term savings
+    type: invest
+  - id: "125646874647451176"
+    memo: M1 Spend
+    type: cash
+  - id: "145017995272377900"
+    memo: M1 Savings
+    type: cash
   allocation:
     gold: 25
     bond: 25
@@ -24,9 +27,9 @@ universidad:
   options:
     tax: true
   accounts:
-    - id: "125646874609702439"
-      memo: M1
-      type: invest
+  - id: "125646874609702439"
+    memo: M1
+    type: invest
   allocation:
     gold: 20
     bond: 20
@@ -38,24 +41,24 @@ ira:
   options:
     tax: false
   accounts:
-    - id: "125631306328429870"
-      memo: brokeragelink
-      type: invest
-    - id: "130183492315108355"
-      memo: Brokeragelink Roth
-      type: invest
-    # - id: "125631306450064687" # switched to trading account
-    #   memo: Fidelity Roth
-    #   type: invest
-    - id: "134602324096046668"
-      memo: M1 Roth
-      type: invest
-    - id: "136091501317838010"
-      memo: fran-roth
-      type: invest
-    - id: "125646874675762729"
-      memo: M1 Taxable APV
-      type: invest
+  - id: "125631306328429870"
+    memo: brokeragelink
+    type: invest
+  - id: "130183492315108355"
+    memo: Brokeragelink Roth
+    type: invest
+  # - id: "125631306450064687" # switched to trading account
+  #   memo: Fidelity Roth
+  #   type: invest
+  - id: "134602324096046668"
+    memo: M1 Roth
+    type: invest
+  - id: "136091501317838010"
+    memo: fran-roth
+    type: invest
+  - id: "125646874675762729"
+    memo: M1 Taxable APV
+    type: invest
   allocation:
     gold: 19
     bond: 19
