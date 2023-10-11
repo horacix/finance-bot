@@ -8,12 +8,9 @@ short-term:
   - id: "125647713079383611"
     memo: Discover pie savings
     type: cash
-  - id: "125631306028537133"
+  - id: "158066769451275848"
     memo: fidelity default short-term savings
     type: invest
-  - id: "125646874647451176"
-    memo: M1 Spend
-    type: cash
   - id: "148640657052784519"
     memo: M1 Savings
     type: cash
@@ -41,19 +38,19 @@ ira:
   options:
     tax: false
   accounts:
-  - id: "125631306328429870"
+  - id: "158066770540746315"
     memo: brokeragelink
     type: invest
-  - id: "130183492315108355"
+  - id: "158066770214639178"
     memo: Brokeragelink Roth
     type: invest
-  # - id: "125631306450064687" # switched to trading account
+  # - id: "158066769786820169" # switched to trading account
   #   memo: Fidelity Roth
   #   type: invest
   - id: "134602324096046668"
     memo: M1 Roth
     type: invest
-  - id: "136091501317838010"
+  - id: "158067939148289644"
     memo: fran-roth
     type: invest
   - id: "125646874675762729"
