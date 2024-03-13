@@ -241,7 +241,7 @@ def buy_recommendations(actual, available, total, allocation, used):
 
 
 def total_available(none):
-    return sum([v for v in none.values() if v > MIN_INVEST])
+    return sum(v for v in none.values() if v > MIN_INVEST)
 
 def rebalance(config, actual):
     allocation = config['allocation']
@@ -290,7 +290,7 @@ def needs_sweep(accounts):
 def vested(accounts):
     return any(
         line["id"] in CONFIG["vesting"]
-        and float(line["displayBalance"]) > 0.01
+        and float(line["displayBalance"]) > 0.05
         for line in accounts
     )
 
@@ -302,7 +302,7 @@ def pretty_rec(message, available: dict):
     out += "BUY:\n"
     for rec in message['buy']:
         out += f' {rec["asset"]} ({rec["rec"]}): {Decimal(rec["amount"]).quantize(TWOPLACES)}\n'
-    if len(available) > 0:
+    if available:
         out += "AVAILABLE:\n"
         for aid, avalue in available.items():
             if avalue > MIN_INVEST:
@@ -435,4 +435,4 @@ if vested(accounts["data"]["accounts"]):
     print("Balance in vesting account")
     if not args.local:
         send_notification("Vesting available",
-                          "Go to MorganStanley and sell available stock")
+                          "Go to E*Trade and sell or transfer")
