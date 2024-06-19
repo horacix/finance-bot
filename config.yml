@@ -9,8 +9,8 @@ preferred:
   gold: IAU/GLDM/IAUM
   bond: FNBGX/VGLT
   cash: FUMBX/VGSH
-  smallcap: FISVX/VIOV
-  stock: FZROX/VTI
+  smallcap: FISVX/VIOV/VBR
+  stock: FZROX/VTI/ITOT
   other: "???"
 vesting:
 - "162522988589078420"

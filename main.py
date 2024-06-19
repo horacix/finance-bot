@@ -88,6 +88,11 @@ query Web_GetHoldings($input: PortfolioInput) {
             value
             __typename
           }
+          security {
+            id
+            ticker
+            name
+          }
           __typename
         }
         __typename
@@ -136,8 +141,11 @@ def investments_to_holdings(invests, id):
             if holding['account']['id'] == id:
                 if args.debug:
                     print(f"{id}: {holding['id']}")
+                symbol = holding['ticker']
+                if not symbol:
+                    symbol = line['node']['security']['ticker']
                 ret.append({
-                    'symbol': holding['ticker'],
+                    'symbol': symbol,
                     'value': holding['value'],
                     'account_id': id
                 })
