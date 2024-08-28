@@ -253,22 +253,36 @@ def total_available(none):
 
 def rebalance(config, actual):
     allocation = config['allocation']
-    tax = config['options']['tax']
     total = get_actual_total(actual)
     rec = {
         'buy': [],
         'sell': []
     }
 
-    if tax:  # optimize tax (sell less)
-        if sell := find_sell(allocation, actual):
-            print(sell)
-            available = round(actual[sell] - total *
-                              allocation[sell]/100 + total_available(actual['none']))
-            rec['sell'].append({'asset': sell, 'amount': available})
-            used = [sell, 'none', 'other']
-            rec['buy'] = buy_recommendations(
-                actual, available, total, allocation, used)
+    used = ['none', 'other']
+    available = 0
+    print(allocation, actual)
+    if sell := find_sell(allocation, actual):
+        print(sell)
+        available = round(actual[sell] - total * allocation[sell]/100)
+        rec['sell'].append({'asset': sell, 'amount': available})
+        available = available + total_available(actual['none'])
+        used.append(sell)
+    else:
+        # rebalance everything
+        target = total / len(allocation)
+        for asset in allocation:
+            if asset in ['none', 'other']:
+                continue
+            if actual[asset] > target:
+                amount = round(actual[asset] - target)
+                rec['sell'].append(
+                    {'asset': asset, 'amount': amount})
+                used.append(asset)
+                available = available + amount
+
+    rec['buy'] = buy_recommendations(
+        actual, available, total, allocation, used)
     return rec
 
 
