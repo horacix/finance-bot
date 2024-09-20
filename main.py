@@ -1,5 +1,6 @@
 import argparse
 import boto3
+import contextlib
 from decimal import Decimal
 import json
 import requests
@@ -141,14 +142,13 @@ def investments_to_holdings(invests, id):
             if holding['account']['id'] == id:
                 if args.debug:
                     print(f"{id}: {holding['id']}")
-                symbol = holding['ticker']
-                if not symbol:
-                    symbol = line['node']['security']['ticker']
-                ret.append({
-                    'symbol': symbol,
-                    'value': holding['value'],
-                    'account_id': id
-                })
+                with contextlib.suppress(TypeError):
+                    symbol = holding['ticker'] or line['node']['security']['ticker']
+                    ret.append({
+                        'symbol': symbol,
+                        'value': holding['value'],
+                        'account_id': id
+                    })
     return ret
 
 
