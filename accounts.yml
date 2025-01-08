@@ -1,24 +1,25 @@
-# short-term:
-#   options:
-#     tax: true
-#   accounts:
-#   - id: "125647287557805620"
-#     memo: Bofa savings
-#     type: cash
-#   - id: "125647713079383611"
-#     memo: Discover pie savings
-#     type: cash
-#   - id: "158066769451275848"
-#     memo: fidelity default short-term savings
-#     type: invest
-#   - id: "164947067076072789"
-#     memo: M1 Savings
-#     type: cash
-#   allocation:
-#     gold: 25
-#     bond: 25
-#     cash: 25
-#     stock: 25
+short-term:
+  options:
+    tax: true
+  accounts:
+  - id: "125647287557805620"
+    memo: Bofa savings
+    type: cash
+  - id: "125647713079383611"
+    memo: Discover pie savings
+    type: cash
+  - id: "158066769451275848"
+    memo: fidelity default short-term savings
+    type: invest
+  - id: "164947067076072789"
+    memo: M1 Savings
+    type: cash
+  allocation:
+    gold: 20
+    bond: 20
+    cash: 20
+    stock: 20
+    smallcap: 20
 
 universidad:
   options:
@@ -38,30 +39,18 @@ main:
   options:
     tax: false
   accounts:
-  - id: "125647287557805620"
-    memo: Bofa savings
-    type: cash
-  - id: "125647713079383611"
-    memo: Discover pie savings
-    type: cash
-  - id: "158066769451275848"
-    memo: fidelity default short-term savings
-    type: invest
-  - id: "164947067076072789"
-    memo: M1 Savings
-    type: cash
   - id: "158066770540746315"
     memo: brokeragelink
     type: invest
   - id: "158066770214639178"
     memo: Brokeragelink Roth
     type: invest
-  - id: "158066769786820169" # switched to trading account
-    memo: Fidelity Roth
-    type: invest
-  - id: "134602324096046668"
-    memo: M1 Roth
-    type: invest
+  # - id: "158066769786820169"
+  #   memo: Fidelity Roth
+  #   type: invest
+  # - id: "134602324096046668"
+  #   memo: M1 Roth
+  #   type: invest
   - id: "158067939148289644"
     memo: fran-roth
     type: invest
@@ -69,9 +58,11 @@ main:
     memo: M1 Taxable APV
     type: invest
   allocation:
-    gold: 19
-    bond: 19
-    cash: 19
-    stock: 19
-    smallcap: 19
-    other: 5
+    gold: 20
+    bond: 20
+    reit: 20
+    smallcap-intl: 20
+    smallcap: 20
+    cash: 0
+    stock: 0
+    other: 0

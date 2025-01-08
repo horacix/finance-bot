@@ -1,16 +1,18 @@
 threshold: 40
-min_investment_balance: 25
+min_investment_balance: 100
 main:
   account: "125647287449802290"
   memo: bofa
-  low: 6250
-  high: 10420
+  low: 8250
+  high: 12420
 preferred:
-  gold: IAU/GLDM/IAUM
+  gold: IAUM
   bond: FNBGX/VGLT
   cash: FUMBX/VGSH
-  smallcap: FCPVX/PMJAX/VBR/AVUV
+  smallcap: FCPVX/AVUV
   stock: FZROX/VTI/ITOT
+  reit: VNQ
+  smallcap-intl: AVDV
   other: "???"
 vesting:
 - "162522988589078420"
