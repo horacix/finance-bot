@@ -9,7 +9,7 @@ short-term:
     memo: Discover pie savings
     type: cash
   - id: "158066769451275848"
-    memo: fidelity default short-term savings
+    memo: Fidelity Joint Short-Term
     type: invest
   - id: "164947067076072789"
     memo: M1 Savings
@@ -35,7 +35,7 @@ universidad:
     stock: 20
     smallcap: 20
 
-main:
+ira:
   options:
     tax: false
   accounts:
@@ -51,6 +51,9 @@ main:
   # - id: "134602324096046668"
   #   memo: M1 Roth
   #   type: invest
+  - id: "198188083327259843"
+    memo: Fidelity Joint Long-Term
+    type: invest
   - id: "158067939148289644"
     memo: fran-roth
     type: invest
