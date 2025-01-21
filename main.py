@@ -3,6 +3,7 @@ import boto3
 import contextlib
 from decimal import Decimal
 import json
+import oathtool
 import requests
 from python_graphql_client import GraphqlClient
 import os
@@ -21,12 +22,17 @@ class Monarch:
     client = ''
 
     def __init__(self, username, password):
-        r = requests.post('https://api.monarchmoney.com/auth/login/', data={
+        r = requests.post('https://api.monarchmoney.com/auth/login/', json={
             'username': username,
             'password': password,
-            'supports_mfa': 'false',
-            'trusted_device': 'true'
+            'supports_mfa': True,
+            'trusted_device': True,
+            'totp': oathtool.generate_otp(os.environ['MONARCH_TOKEN'])
+        }, headers={
+            "Client-Platform": "web",
+            'Content-Type': 'application/json'
         })
+        # print(r.content)
         self.token = json.loads(r.content)['token']
         print(self.token)
         self.headers = {

@@ -1,5 +1,6 @@
 boto3==1.16.47
 mariadb==1.0.7
+oathtool
 python-dotenv==0.15.0
 python-graphql-client==0.4.3
 PyYAML==5.3.1
