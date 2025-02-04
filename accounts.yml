@@ -14,6 +14,9 @@ short-term:
   - id: "164947067076072789"
     memo: M1 Savings
     type: cash
+  - id: "201725899487303093"
+    memo: M1 Joint Short-Term
+    type: invest
   allocation:
     gold: 20
     bond: 20
