@@ -6,7 +6,7 @@ main:
   low: 8250
   high: 12420
 preferred:
-  gold: IAUM
+  gold: IAUM/IAU
   bond: FNBGX/VGLT
   cash: FUMBX/VGSH
   smallcap: FCPVX/AVUV

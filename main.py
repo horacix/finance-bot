@@ -218,6 +218,8 @@ def find_sell(allocation, actual):
         if asset in ["none", "other"]:
             continue
         target = total*allocation[asset]/100
+        if actual[asset] > 0 and target == 0:
+            return asset
         diff = (actual[asset]-target)/target
         if diff > threshold/100:
             return asset
