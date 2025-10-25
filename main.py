@@ -10,8 +10,6 @@ import os
 from dotenv import load_dotenv
 from copy import deepcopy
 import yaml
-import mariadb
-from datetime import datetime
 
 load_dotenv()
 TWOPLACES = Decimal(10) ** -2
@@ -34,7 +32,8 @@ class Monarch:
         })
         # print(r.content)
         self.token = json.loads(r.content)['token']
-        print(self.token)
+        if args.debug:
+            print(self.token)
         self.headers = {
             "Authorization": f"Token {self.token}"
         }
@@ -137,7 +136,7 @@ def load_config(filename):
 def get_actual_total(actual):
     total = 0.0
     for value in actual.values():
-        total += value if type(value) == float else sum(value.values())
+        total += value if type(value) is float else sum(value.values())
     return total
 
 
@@ -347,7 +346,8 @@ def send_notification(subject, message):
         Subject=subject,
         Message=message
     )
-    print(response)
+    if args.debug:
+        print(response)
 
 
 def decimal_allocation(allocation):
@@ -374,34 +374,6 @@ def updatedb(account, allocation):
     )
     if args.debug:
         print(response)
-
-    try:
-        conn = mariadb.connect(
-            user=os.environ['DATABASE_USER'],
-            password=os.environ['DATABASE_PASSWORD'],
-            host=os.environ['DATABASE_HOST'],
-            port=3306,
-            database=os.environ['DATABASE'],
-            autocommit=True
-        )
-    except mariadb.Error as e:
-        print(f"Error connecting to MariaDB Platform: {e}")
-        return
-
-    cur = conn.cursor()
-    cur.execute(
-        "SELECT account_id FROM accounts WHERE account_name=?", (account,))
-
-    account_id = -1
-    for row in cur:
-        account_id = row[0]
-
-    cur.execute(
-        "INSERT INTO balances (account_id, balance_date, balance_amount) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE balance_amount=?",
-        (account_id, datetime.now().isoformat(), total, total)
-    )
-
-    conn.close()
 
 
 # Read configuration

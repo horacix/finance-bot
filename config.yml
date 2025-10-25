@@ -3,8 +3,8 @@ min_investment_balance: 100
 main:
   account: "125647287449802290"
   memo: bofa
-  low: 8250
-  high: 12420
+  low: 6000
+  high: 10000
 preferred:
   gold: IAUM/IAU
   bond: FNBGX/VGLT
@@ -12,6 +12,7 @@ preferred:
   smallcap: FCPVX/AVUV
   stock: FZROX/VTI/ITOT
   reit: VNQ
+  reit-intl: VNQI
   smallcap-intl: AVDV
   other: "???"
 vesting:

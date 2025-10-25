@@ -8,9 +8,6 @@ short-term:
   - id: "125647713079383611"
     memo: Discover pie savings
     type: cash
-  - id: "158066769451275848"
-    memo: Fidelity Joint Short-Term
-    type: invest
   - id: "164947067076072789"
     memo: M1 Savings
     type: cash
@@ -66,7 +63,8 @@ ira:
   allocation:
     gold: 20
     bond: 20
-    reit: 20
+    reit: 15
+    reit-intl: 5
     smallcap-intl: 20
     smallcap: 20
     cash: 0

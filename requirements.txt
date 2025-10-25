@@ -1,5 +1,4 @@
-boto3==1.16.47
-mariadb==1.0.7
+boto3==1.40.59
 oathtool
 python-dotenv==0.15.0
 python-graphql-client==0.4.3
