@@ -70,3 +70,20 @@ ira:
     cash: 0
     stock: 0
     other: 0
+
+sofia-roth:
+  options:
+    tax: false
+  accounts:
+  - id: "226735695005210308"
+    memo: Fidelity Sofia Roth
+    type: invest
+  allocation:
+    gold: 15
+    crypto: 5
+    reit: 15
+    reit-intl: 5
+    smallcap-intl: 20
+    smallcap: 20
+    bond: 10
+    corp-bond: 10
