@@ -145,8 +145,6 @@ def investments_to_holdings(invests, id):
     for line in invests:
         for holding in line['node']['holdings']:
             if holding['account']['id'] == id:
-                if args.debug:
-                    print(f"{id}: {holding['id']}")
                 with contextlib.suppress(TypeError):
                     symbol = holding['ticker'] or line['node']['security']['ticker']
                     ret.append({
@@ -279,10 +277,10 @@ def rebalance(config, actual):
         used.append(sell)
     else:
         # rebalance everything
-        target = total / len(allocation)
         for asset in allocation:
             if asset in ['none', 'other']:
                 continue
+            target = total*allocation[asset]/100
             if actual[asset] > target:
                 amount = round(actual[asset] - target)
                 rec['sell'].append(
