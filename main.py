@@ -376,6 +376,19 @@ def updatedb(account, allocation):
         print(response)
 
 
+def print_allocation(allocation):
+    total = get_actual_total(allocation)
+    longest = max(len(asset) for asset in allocation if asset != 'none')
+    for asset in allocation:
+        if asset == 'none':
+            continue
+        percent = allocation[asset] / total * 100
+        print(f"{asset}{' ' * (longest-len(asset))}: {Decimal(allocation[asset]).quantize(TWOPLACES)} ({percent:.2f}%)")
+    if len(allocation['none']) > 0:
+        print("None:")
+        for aid, avalue in allocation['none'].items():
+            print(f" {ALL_ACCOUNTS[aid]}: {avalue}")
+
 # Read configuration
 args = read_args()
 account_config = load_config(r'./accounts.yml')
@@ -402,10 +415,11 @@ if args.account != "":
     accounts_to_eval = [args.account]
 
 for account in accounts_to_eval:
-    print(account)
+    print(f"{account}:")
+    print("-" * (len(account)+1))
     allocation = get_actual_allocation(
         account_config[account], accounts['data']['accounts'], invests['data']['portfolio']['aggregateHoldings']['edges'])
-    print(allocation)
+    print_allocation(allocation)
 
     rec = ""
     if needs_invest(allocation):
