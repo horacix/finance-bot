@@ -63,8 +63,7 @@ ira:
   allocation:
     gold: 20
     bond: 20
-    reit: 15
-    reit-intl: 5
+    reit: 20
     smallcap-intl: 20
     smallcap: 20
 
@@ -78,8 +77,7 @@ sofia-roth:
   allocation:
     gold: 15
     crypto: 5
-    reit: 15
-    reit-intl: 5
+    reit: 20
     smallcap-intl: 20
     smallcap: 20
     bond: 10

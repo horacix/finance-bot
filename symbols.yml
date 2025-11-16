@@ -29,10 +29,11 @@ FZILX: stock
 FZROX: stock
 ITOT: stock
 VTI: stock
+AVRE: reit
 IYR: reit
 SCHH: reit
 VNQ: reit
-VNQI: reit-intl
+VNQI: reit
 AVDV: smallcap-intl
 SCZ: smallcap-intl
 GWX: smallcap-intl
